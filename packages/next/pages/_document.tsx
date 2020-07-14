@@ -341,8 +341,10 @@ export class Head extends Component<
       })
     }
 
+    const { dynamicAssetPrefix, ...newProps } = this.props
+
     return (
-      <head {...this.props}>
+      <head {...newProps}>
         {this.context._documentProps.isDevelopment && (
           <>
             <style
@@ -458,6 +460,7 @@ export class NextScript extends Component<OriginProps> {
   static propTypes = {
     nonce: PropTypes.string,
     crossOrigin: PropTypes.string,
+    dynamicAssetPrefix: PropTypes.string,
   }
 
   context!: React.ContextType<typeof DocumentComponentContext>
@@ -565,8 +568,14 @@ export class NextScript extends Component<OriginProps> {
       ))
   }
 
-  static getInlineScriptSource(documentProps: DocumentProps): string {
+  static getInlineScriptSource(
+    documentProps: DocumentProps,
+    prefix?: string
+  ): string {
     const { __NEXT_DATA__ } = documentProps
+    // @ts-ignore
+    __NEXT_DATA__.dynamicAssetPrefix = prefix
+
     try {
       const data = JSON.stringify(__NEXT_DATA__)
       return htmlEscapeJsonString(data)
@@ -613,7 +622,8 @@ export class NextScript extends Component<OriginProps> {
               crossOrigin={crossOrigin || process.env.__NEXT_CROSS_ORIGIN}
               dangerouslySetInnerHTML={{
                 __html: NextScript.getInlineScriptSource(
-                  this.context._documentProps
+                  this.context._documentProps,
+                  dynamicAssetPrefix
                 ),
               }}
               data-ampdevmode
@@ -661,7 +671,8 @@ export class NextScript extends Component<OriginProps> {
             crossOrigin={crossOrigin || process.env.__NEXT_CROSS_ORIGIN}
             dangerouslySetInnerHTML={{
               __html: NextScript.getInlineScriptSource(
-                this.context._documentProps
+                this.context._documentProps,
+                dynamicAssetPrefix
               ),
             }}
           />

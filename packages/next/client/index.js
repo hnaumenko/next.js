@@ -33,12 +33,13 @@ const {
   query,
   buildId,
   assetPrefix,
+  dynamicAssetPrefix,
   runtimeConfig,
   dynamicIds,
   isFallback,
 } = data
 
-const prefix = assetPrefix || ''
+const prefix = dynamicAssetPrefix ? dynamicAssetPrefix : assetPrefix || ''
 
 // With dynamic assetPrefix it's no longer possible to set assetPrefix at the build time
 // So, this is how we do it in the client side at runtime
